@@ -19,6 +19,10 @@ module.exports = {
         allowNull: false,
         unique: true,
       },
+      botActivo: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: true
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

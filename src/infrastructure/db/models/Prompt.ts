@@ -1,7 +1,7 @@
 import { AutoIncrement, Column, DataType, Model, PrimaryKey, Table } from "sequelize-typescript";
 
 @Table({
-  timestamps: true,
+  timestamps: true
 })
 export class Prompt extends Model {
   @AutoIncrement

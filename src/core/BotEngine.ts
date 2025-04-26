@@ -1,5 +1,5 @@
 // import { generate } from "../infrastructure/gemini/geminiService"
-import { sendFn } from "../infrastructure/whatsapp/whatsAppClient"
+import { sendFn } from "../infrastructure/whatsapp/client"
 import { Flow } from "./Flow"
 
 export class BotEngine {
@@ -20,12 +20,8 @@ export class BotEngine {
     }
 
     if (matchedFlow) {
-      
-      // return
       await matchedFlow.handler({ message }, { send })
     }
 
-    // Aqui vamos a llamar al servicio de Gemini
-    // await generate(message)
   }
 }

@@ -1,19 +1,24 @@
+import https from "https"
+
 import express, { Request, Response } from "express"
 import { createServer } from "http"
 import { Server } from "socket.io"
-import { conectarDB } from "./infrastructure/db"
+import { conectarDB } from "./infrastructure/db/db"
+import cors from "cors"
 
 import { flows } from "./flows"
 import { BotEngine } from "./core/BotEngine"
-import { startWhatsAppClient } from "./infrastructure/whatsapp/whatsAppClient"
+import { startWhatsAppClient } from "./infrastructure/whatsapp/client"
 import { startSocketClient } from "./infrastructure/socket/socketClient"
 
 export const STAGE = process.env.STAGE || "dev"
 //Inicializar el bot
 const bot = new BotEngine(flows)
+//Habilitar cors
 
 //Configurar el server con socketIO y CORS
 const app = express()
+app.use(cors())
 const server = createServer(app)
 const io = new Server(server, {
   cors: { origin: "*" },
@@ -40,8 +45,8 @@ io.on("connection", (socket) => {
   })
 })
 
-server.listen(3000, () => {
-  console.log("🚀 Server corriendo en http://localhost:3000")
+server.listen(3000, async () => {
+  console.log(`🚀 Server corriendo en http://localhost:3000`)
   conectarDB()
 
   startWhatsAppClient(bot)

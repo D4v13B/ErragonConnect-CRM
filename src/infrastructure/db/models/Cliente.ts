@@ -2,6 +2,7 @@ import {
   AutoIncrement,
   Column,
   DataType,
+  Default,
   HasMany,
   Index,
   Model,
@@ -29,6 +30,10 @@ export class Cliente extends Model {
   })
   @Column(DataType.STRING(30))
   numero!: string
+  
+  @Default(true)
+  @Column(DataType.BOOLEAN)
+  botActivo!: boolean
 
   @HasMany(() => Mensaje)
   mensajes?: Mensaje[]

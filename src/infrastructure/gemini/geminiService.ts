@@ -5,18 +5,14 @@ import {
   GenerateContentResponse,
   GoogleGenAI,
 } from "@google/genai"
-// import { getPromptData } from "~/config/database"
+import { getPrompData } from "../../application/actions/prompt/getPrompData"
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_KEY, vertexai: false })
 const nameModel = "gemini-2.0-flash"
 
-export async function generate(
-  message: string,
-):Promise<string> {
-
-   
+export async function generate(message: string): Promise<string> {
   // const promptData = await getPromptData()
-  const promptData = ""
+  const promptData = (await getPrompData()) ?? ""
 
   const response = await ai.models.generateContent({
     model: nameModel,
@@ -73,7 +69,7 @@ export async function generate(
   //       model: nameModel,
   // contents: [message, { : [functionResponse.response] }],
   //       contents: [
-	// 				{text: promptData},
+  // 				{text: promptData},
   //         { text: message },
   //         {
   //           text: JSON.stringify(functionResponse),
@@ -83,6 +79,6 @@ export async function generate(
 
   //   return responseWithFunctionResult.text // Devolver la respuesta final
   // } else {
-    return response?.text ?? "No se ha logrado responder con el AgenteIA"
+  return response?.text ?? "No se ha logrado responder con el AgenteIA"
   // }
 }

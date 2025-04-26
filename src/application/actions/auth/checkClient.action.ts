@@ -3,7 +3,7 @@ import { dataJWT } from "../../../helpers/createJWT"
 import { Usuario } from "../../../infrastructure/db/models/Usuario"
 
 export const checkClient = async (
-  { id, box }: dataJWT,
+  { id }: dataJWT,
   token: string
 ): Promise<AuthResponse | null> => {
   try {
@@ -11,7 +11,6 @@ export const checkClient = async (
     const user = await Usuario.findOne({
       where: {
         id
-        clie_box: box,
       },
     })
 

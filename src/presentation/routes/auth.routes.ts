@@ -3,7 +3,7 @@ import { validateSignUp, validateSignIn } from "../validators/auth.validator"
 // import { profile, signIn, signUp } from "../../adapters/controllers/auth.controllers"
 import { profile, signIn, signUp } from "../controllers/auth.controllers"
 import { chechAuth } from "../middleware/checkAuth.middleware"
-import { createUser } from "../actions/auth/createUser.action"
+// import { createUser } from "../actions/auth/createUser.action"
 
 const router = express.Router()
 

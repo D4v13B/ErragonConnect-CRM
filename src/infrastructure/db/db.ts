@@ -1,6 +1,6 @@
 import "dotenv/config"
 import { Sequelize } from "sequelize-typescript"
-import { STAGE } from "../app"
+import { STAGE } from "../../app"
 // import * as models from "./../models"
 
 
@@ -12,15 +12,17 @@ export const sequelize = new Sequelize({
   database: process.env.DB_NAME as string,
   dialect: "mysql",
 
-  models: [__dirname + "/../models"],
+  logging: STAGE == "dev" ? true : false,
+
+  models: [__dirname + "/models"],
 })
 
 export const conectarDB = async () => {
   try {
     if(STAGE == "dev"){
-      await sequelize.sync({ alter: false, logging: true })
+      await sequelize.sync({ alter: false })
     }else{
-      await sequelize.authenticate({logging: false})
+      await sequelize.authenticate()
     }
     console.log("🫛  Conectado con base de datos")
   } catch (error) {

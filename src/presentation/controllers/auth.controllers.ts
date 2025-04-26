@@ -4,7 +4,7 @@ import { createJWT } from "../../helpers/createJWT"
 import { Request, Response } from "express"
 import { signin } from "../../application/actions/auth/signin.action"
 import { RequestCustom } from "../../domain/interfaces/RequestCustom"
-import { createUser } from "../../application/actions/auth/createUser.action" 
+// import { createUser } from "../../application/actions/auth/createUser.action" 
 // import { newBoxEmail } from "../../actions/emails/newBox.email"
 // import { sendPushNotifications } from "../../actions/expo/sendPushNotification"
 
@@ -81,13 +81,14 @@ export const signUp = async (
 
    try{
       console.log(pushToken)
-      const user = await createUser(nombre, email, password, telefono)
+      // const user = await createUser(nombre, email, password, telefono)
+      let user
 
       if(!user){
          throw new Error("Error al momento de crear el usuario")
       }
 
-      // newBoxEmail(nombre, user.clie_box, email) //Notificacion 
+      // newBoxEmail(nombre, email) //Notificacion 
       /**
        * Push token notification
        */
@@ -101,9 +102,9 @@ export const signUp = async (
       //    ])
       // }
 
-      const userData = returnAuthResponse(user, createJWT({ id: user.clie_id, email: user.email as string }))
+      // const userData = returnAuthResponse(user, createJWT({ id: user.clie_id, email: user.email as string }))
 
-      res.json(userData)
+      // res.json(userData)
 
    }catch(err){
       console.error(err)

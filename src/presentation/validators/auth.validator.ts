@@ -1,5 +1,5 @@
 import { validateError } from "./../../helpers/validateHelper"
-import { Cliente } from "./../../infraestructure/models/Cliente"
+// import { Cliente } from "./../../infraestructure/models/Cliente"
 import { NextFunction, Request, Response } from "express"
 
 const { body } = require("express-validator")
