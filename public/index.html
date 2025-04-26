@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WhatsApp QR Scanner</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f2f5;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+      .container {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        text-align: center;
+        max-width: 400px;
+        width: 100%;
+      }
+      .logo {
+        width: 120px;
+        margin-bottom: 20px;
+      }
+      .qr-container {
+        margin: 20px 0;
+        padding: 15px;
+        background-color: #fff;
+        border-radius: 8px;
+        display: inline-block;
+      }
+      #qr-image {
+        width: 250px;
+        height: 250px;
+        border: 1px solid #e0e0e0;
+      }
+      h1 {
+        color: #478BCC;
+        margin-bottom: 10px;
+      }
+      p {
+        color: #555;
+        margin-bottom: 20px;
+      }
+      .status {
+        margin-top: 20px;
+        padding: 10px;
+        border-radius: 5px;
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <img src="/logo.jpg" alt="Logo" class="logo" />
+      <h1>Escanea el código QR</h1>
+      <p>Para conectar WhatsApp, escanea este código con tu teléfono</p>
+
+      <div class="qr-container">
+        <img src="" alt="QR para escanear" id="qr-image" />
+      </div>
+
+      <div class="status" id="status-message">Esperando el código QR...</div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+    <script>
+      const socket = io("http://localhost:3000", {
+        query: { company: "Moncho" },
+      })
+
+      socket.on("qr", (qrDataURL) => {
+        console.log("QR recibido")
+        console.log(qrDataURL)
+        const qrImg = document.getElementById("qr-image")
+        qrImg.src = qrDataURL
+        document.getElementById("status-message").textContent =
+          "QR listo para escanear"
+      })
+
+      socket.on("ready", (msg) => {
+        console.log("Listo:", msg)
+        document.getElementById("status-message").textContent =
+          "✅ Cliente conectado a WhatsApp"
+        alert("✅ Cliente conectado a WhatsApp")
+      })
+
+      socket.on("message", (data) => {
+        console.log("📥 Mensaje:", data)
+      })
+
+      // Función para enviar mensaje (puedes conectarla a un botón)
+      function sendMessage(number, text) {
+        socket.emit("send-message", {
+          to: number,
+          message: text,
+        })
+      }
+    </script>
+  </body>
+</html>

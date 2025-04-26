@@ -15,6 +15,7 @@ import {
   BeforeCreate,
 } from "sequelize-typescript"
 import { Rol } from "./Rol"
+import { Mensaje } from "./Mensaje"
 // import { Sucursal } from "./Sucursal"
 // import { Factura } from "./Factura"
 // import { saltAndHashPassword } from "../../helpers/hashPassword"
@@ -30,6 +31,11 @@ export class Usuario extends Model {
 
   @Column(DataType.STRING(20))
   declare nombre: string
+
+  @AllowNull(false)
+  @Unique
+  @Column(DataType.STRING(15))
+  usuario!: string
 
   @IsEmail
   @Unique
@@ -59,8 +65,11 @@ export class Usuario extends Model {
   @Column(DataType.INTEGER)
   rolId!: number
 
-  @BelongsTo(() => Rol)
+  @BelongsTo(() => Rol, {onDelete: "CASCADE"})
   rol!: Rol
+
+  @HasMany(() => Mensaje)
+  mensajes?: Mensaje
 
   // @BelongsTo(() => Sucursal)
   // sucursal!: Sucursal

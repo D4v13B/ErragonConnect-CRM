@@ -9,6 +9,7 @@ import {
   BelongsTo,
 } from "sequelize-typescript"
 import { Cliente } from "./Cliente"
+import { Usuario } from "./Usuario"
 
 interface CreationAttribute {
   body: string
@@ -33,11 +34,15 @@ export class Mensaje extends Model<Mensaje, CreationAttribute> {
   // fromNumber!: string
 
   @ForeignKey(() => Cliente)
-  // @Column(DataType.STRING(30))
-  numeroCliente!: number
+  @Column(DataType.STRING(30))
+  numeroCliente!: string
 
-  @Column(DataType.TEXT)
-  toNumber!: string
+  @ForeignKey(() => Usuario)
+  @Column(DataType.INTEGER)
+  usuaId!: number
+
+  // @Column(DataType.TEXT)
+  // toNumber!: string
 
   @Column(DataType.BOOLEAN)
   fromMe!: boolean
@@ -47,4 +52,7 @@ export class Mensaje extends Model<Mensaje, CreationAttribute> {
     targetKey: "numero",
   })
   client?: Cliente
+
+  @BelongsTo(() => Usuario)
+  usuario?: Usuario
 }

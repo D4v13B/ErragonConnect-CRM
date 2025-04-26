@@ -1,34 +1,36 @@
 import express, { Request, Response } from "express"
 import { createServer } from "http"
 import { Server } from "socket.io"
-import { initClient } from "./whatsapp/client"
-import { Usuario } from "./models/Usuario";
-import { conectarDB } from "./config/db"; 
+import { startWhatsAppClient } from "./infrastructure/whatsapp/client"
+import { conectarDB } from "./infrastructure/db"
+import { BotEngine } from "./core/BotEngine"
+import { welcomeFlow } from "./flows/welcome.flow"
 
 conectarDB()
 
-export const STAGE = process.env.STAGE || "dev";
+export const STAGE = process.env.STAGE || "dev"
 
+const bot = new BotEngine([welcomeFlow])
 const app = express()
 const server = createServer(app)
 const io = new Server(server, {
   cors: { origin: "*" },
 })
 
-app.get("/", async (req: Request, res: Response) => {
-  const usuarios = await Usuario.findAll();
+app.use(express.static("public"))
 
-  res.json(usuarios)
+app.get("/", (_, res) => {
+  res.sendFile(__dirname + "/public/index.html")
 })
 
 io.on("connection", (socket) => {
-  initClient(socket)
-  if(STAGE == "dev"){
+  startWhatsAppClient(socket, bot)
+  if (STAGE == "dev") {
     console.log("🟢 Cliente conectado:", socket.id)
   }
 
   socket.on("disconnect", () => {
-    if(STAGE == "dev"){
+    if (STAGE == "dev") {
       console.log("🔴 Cliente desconectado:", socket.id)
     }
   })
