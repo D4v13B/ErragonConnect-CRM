@@ -136,3 +136,4 @@ dist
 .pnp.*
 
 .wwebjs_auth
+.wwebjs_cache
