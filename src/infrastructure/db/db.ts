@@ -3,7 +3,6 @@ import { Sequelize } from "sequelize-typescript"
 import { STAGE } from "../../app"
 // import * as models from "./../models"
 
-
 export const sequelize = new Sequelize({
   host: process.env.DB_HOST as string,
   username: process.env.DB_USER as string,
@@ -11,6 +10,9 @@ export const sequelize = new Sequelize({
   port: parseInt(process.env.DB_PORT as string),
   database: process.env.DB_NAME as string,
   dialect: "mysql",
+  dialectOptions: {
+    charset: "utf8mb4",
+  },
 
   logging: STAGE == "dev" ? true : false,
 
@@ -19,9 +21,9 @@ export const sequelize = new Sequelize({
 
 export const conectarDB = async () => {
   try {
-    if(STAGE == "dev"){
+    if (STAGE == "dev") {
       await sequelize.sync({ alter: false })
-    }else{
+    } else {
       await sequelize.authenticate()
     }
     console.log("🫛  Conectado con base de datos")

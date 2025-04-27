@@ -6,7 +6,9 @@ import { clientNumberFilter } from "../../helpers/clientNumberFilter"
 import { clientFindOrCreate } from "../../application/actions/cliente/clientFindOrCreate"
 import { logMessage } from "../../application/actions/message/logMessage"
 
-export let client: Client
+export let client: Client = new Client({
+  authStrategy: new LocalAuth(),
+})
 
 /**
  * Funcion que me ayuda a enviar desde el bot
@@ -21,9 +23,6 @@ export const sendFn = async (to: string, message: string) => {
 
 export const startWhatsAppClient = (bot: BotEngine) => {
   // const companyName = (socket.handshake.query.company as string) || socket.id
-  client = new Client({
-    authStrategy: new LocalAuth(),
-  })
 
   client.on("ready", () => {
     console.log("✅ Cliente WhatsApp listo")

@@ -1,15 +1,12 @@
 import express from "express"
-import { validateSignUp, validateSignIn } from "../validators/auth.validator"
-// import { profile, signIn, signUp } from "../../adapters/controllers/auth.controllers"
-import { profile, signIn, signUp } from "../controllers/auth.controllers"
-import { chechAuth } from "../middleware/checkAuth.middleware"
-// import { createUser } from "../actions/auth/createUser.action"
+import { validateSignIn } from "../validators/auth.validator"
+import { logIn } from "../controllers/auth.controllers"
 
 const router = express.Router()
 
-router.post("/signin", validateSignIn, signIn)
+router.post("/login", validateSignIn, logIn)
 // TODO Endpoint para poder registrarse
-router.post("/signup", validateSignUp, signUp)
-router.get("/profile", chechAuth, profile)
+// router.post("/signup", validateSignUp, signUp)
+// router.get("/profile", chechAuth, profile)
 
 export default router

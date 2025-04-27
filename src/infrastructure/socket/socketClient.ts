@@ -1,6 +1,7 @@
 import { client } from "../whatsapp/whatsappClient"
 import * as QrCode from "qrcode"
 import "dotenv/config"
+import { STAGE } from "../../app"
 
 export const startSocketClient = (socket: any) => {
   socket?.on(
@@ -12,7 +13,7 @@ export const startSocketClient = (socket: any) => {
   )
 
   client.on("qr", async (qr) => {
-    // console.log("🟡 QR recibido")
+    STAGE == "dev" ? console.log("🟡 QR recibido") : ""
     const qrImage = await QrCode.toDataURL(qr)
     socket?.emit("qr", qrImage)
   })

@@ -4,6 +4,8 @@ import express, { Request, Response } from "express"
 import { createServer } from "http"
 import { Server } from "socket.io"
 import { conectarDB } from "./infrastructure/db/db"
+import indexRoutes from "./presentation/routes/index.routes"
+
 import cors from "cors"
 
 import { flows } from "./flows"
@@ -19,6 +21,11 @@ const bot = new BotEngine(flows)
 //Configurar el server con socketIO y CORS
 const app = express()
 app.use(cors())
+app.use(express.json())
+
+app.use("/", indexRoutes)
+
+// Sockeet server init
 const server = createServer(app)
 const io = new Server(server, {
   cors: { origin: "*" },

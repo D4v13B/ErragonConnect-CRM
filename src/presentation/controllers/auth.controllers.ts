@@ -1,18 +1,15 @@
-// import { Usua } from "../../infraestructure/models/Cliente"
 import { Usuario } from "../../infrastructure/db/models/Usuario"
 import { createJWT } from "../../helpers/createJWT"
 import { Request, Response } from "express"
-import { signin } from "../../application/actions/auth/signin.action"
+import { login } from "../../application/actions/auth/login.action"
 import { RequestCustom } from "../../domain/interfaces/RequestCustom"
-// import { createUser } from "../../application/actions/auth/createUser.action" 
-// import { newBoxEmail } from "../../actions/emails/newBox.email"
-// import { sendPushNotifications } from "../../actions/expo/sendPushNotification"
 
 export interface User {
    id: number
    nombre: string
    email: string
    rolId: number
+   rol: string
 }
 export interface AuthResponse extends User {
    token: string
@@ -26,16 +23,17 @@ export const returnAuthResponse = (
       id: user.id,
       nombre: user.nombre as string,
       email: user.email as string,
-      rolId: user.rolId,      
+      rolId: user.rolId,
+      rol: user.rol.nombre,  
       token
    }
 }
 
-export const signIn = async (req: Request, res: Response): Promise<void> => {
+export const logIn = async (req: Request, res: Response): Promise<void> => {
    const { email, password } = req.body
 
    try {
-      const user = await signin(email, password)
+      const user = await login(email, password)
 
       if (!user) {
          res.status(404).json({ message: "Usuario o contraseña incorrectos" })
@@ -44,7 +42,7 @@ export const signIn = async (req: Request, res: Response): Promise<void> => {
 
       const userData = returnAuthResponse(
          user,
-         createJWT({ id: user.id, email: user.email as string })
+         createJWT({ id: user.id, email: user.email as string, rol: user.rol.nombre, rolId: user.rol.id })
       )
 
       res.status(200).json(userData)

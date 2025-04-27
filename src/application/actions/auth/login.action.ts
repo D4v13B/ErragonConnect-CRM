@@ -1,7 +1,8 @@
+import { Rol } from "../../../infrastructure/db/models/Rol"
 import { Usuario } from "../../../infrastructure/db/models/Usuario"
 
 
-export const signin = async (
+export const login = async (
    email: string,
    password: string
 ): Promise<Usuario | null> => {
@@ -11,6 +12,7 @@ export const signin = async (
             email,
             password,
          },
+         include: [Rol]
       })
 
       return user ?? null
