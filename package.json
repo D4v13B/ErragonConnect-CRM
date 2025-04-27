@@ -7,7 +7,8 @@
     "start": "node --no-deprecation ./dist/app.js",
     "dev": "nodemon src/app.ts",
     "migrate": "sequelize-cli db:migrate",
-    "seeders": "sequelize-cli db:seed:all"
+    "seeders": "sequelize-cli db:seed:all",
+    "dbActions": "sequelize-cli db:migrate && sequelize-cli db:seed:all"
   },
   "keywords": [],
   "author": "",

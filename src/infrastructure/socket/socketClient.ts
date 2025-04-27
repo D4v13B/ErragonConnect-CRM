@@ -5,7 +5,7 @@ import "dotenv/config"
 export const startSocketClient = (socket: any) => {
   socket?.on(
     "send-message",
-    ({ to, message }: { to: string; message: string }) => {
+    ({ to, message, usuaId }: { to: string; message: string, usuaId: number }) => {
       const chatId = to.includes("@") ? to : `${to}@c.us`
       client.sendMessage(chatId, message)
     }

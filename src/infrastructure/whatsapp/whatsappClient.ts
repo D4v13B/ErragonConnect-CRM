@@ -8,6 +8,11 @@ import { logMessage } from "../../application/actions/message/logMessage"
 
 export let client: Client
 
+/**
+ * Funcion que me ayuda a enviar desde el bot
+ * @param to Hacia quien va dirigido con la nomenclatura @c.us
+ * @param message 
+ */
 export const sendFn = async (to: string, message: string) => {
   const numero = clientNumberFilter(to)
   await logMessage({body: message, numeroCliente: numero, fromMe: true})//Guardamos en la base de datos
@@ -30,19 +35,18 @@ export const startWhatsAppClient = (bot: BotEngine) => {
 
     const nombre = chat.name
     const numero = clientNumberFilter(clientNumber) 
-    // const numero = msg.from
 
     if(!msg.from || !nombre) return // Si no hay ni mensajes ni nombre, vamos a omitirlo
 
-    await chat.sendStateTyping()
     /**
      * Este es la entrada donde va a actuar el bot
      * 1.Buscamos en base de datos si el numero de celular no esta en lista negra para el bot
      * 2. Si esta activo, entramos al botEngine y respondemos
      * 3. Sino, no hacemos nada, solo recibimos y guardamos en DB
-     */
-
-    if (!(await isBlackList(clientNumberFilter(numero)))) {
+    */
+   
+   if (!(await isBlackList(clientNumberFilter(numero)))) {
+      await chat.sendStateTyping() // Solo se activa el typing, si no está en lista negra
       /**
        * Aqui vamos a encontrar o crear "Cliente", luego insertamos el mensaje
        */
