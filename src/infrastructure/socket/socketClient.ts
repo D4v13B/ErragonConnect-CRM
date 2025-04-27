@@ -1,4 +1,4 @@
-import { client } from "../whatsapp/client"
+import { client } from "../whatsapp/whatsappClient"
 import * as QrCode from "qrcode"
 import "dotenv/config"
 

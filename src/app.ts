@@ -8,7 +8,7 @@ import cors from "cors"
 
 import { flows } from "./flows"
 import { BotEngine } from "./core/BotEngine"
-import { startWhatsAppClient } from "./infrastructure/whatsapp/client"
+import { startWhatsAppClient } from "./infrastructure/whatsapp/whatsappClient"
 import { startSocketClient } from "./infrastructure/socket/socketClient"
 
 export const STAGE = process.env.STAGE || "dev"

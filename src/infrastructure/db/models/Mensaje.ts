@@ -14,8 +14,9 @@ import { Usuario } from "./Usuario"
 interface CreationAttribute {
   body: string
   //   fromNumber: string
-  clientNumber: string
+  numeroCliente: string
   fromMe: boolean
+  usuaId: number
 }
 
 @Table({

@@ -1,5 +1,5 @@
 // import { generate } from "../infrastructure/gemini/geminiService"
-import { sendFn } from "../infrastructure/whatsapp/client"
+import { sendFn } from "../infrastructure/whatsapp/whatsappClient"
 import { Flow } from "./Flow"
 
 export class BotEngine {

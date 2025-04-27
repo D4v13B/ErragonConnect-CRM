@@ -12,10 +12,15 @@ import {
 } from "sequelize-typescript"
 import { Mensaje } from "./Mensaje"
 
+interface attrCreate {
+  nombre: string
+  numero: string
+}
+
 @Table({
   timestamps: true,
 })
-export class Cliente extends Model {
+export class Cliente extends Model<Cliente, attrCreate> {
   @PrimaryKey
   @AutoIncrement
   @Column
