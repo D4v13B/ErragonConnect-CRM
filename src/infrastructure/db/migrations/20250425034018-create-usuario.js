@@ -43,6 +43,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true,
       },
+      isOnline: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
       rolId: {
         type: Sequelize.INTEGER,
         references: {

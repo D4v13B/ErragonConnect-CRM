@@ -55,7 +55,11 @@ export class Usuario extends Model {
   verificado!: boolean
 
   @Column(DataType.STRING)
-  readonly token!: string
+  token!: string
+
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  isOnline!: boolean
 
   // @ForeignKey(() => Sucursal)
   // @Column(DataType.INTEGER)
