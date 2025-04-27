@@ -137,3 +137,5 @@ dist
 
 .wwebjs_auth
 .wwebjs_cache
+#Configuracion de sequelize
+config.js
