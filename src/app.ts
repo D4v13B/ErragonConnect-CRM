@@ -56,5 +56,5 @@ server.listen(3000, async () => {
   console.log(`🚀 Server corriendo en http://localhost:3000`)
   conectarDB()
 
-  startWhatsAppClient(bot)
+  startWhatsAppClient(bot, io)
 })

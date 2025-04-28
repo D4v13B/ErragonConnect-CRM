@@ -40,6 +40,6 @@ export class Cliente extends Model<Cliente, attrCreate> {
   @Column(DataType.BOOLEAN)
   botActivo!: boolean
 
-  @HasMany(() => Mensaje)
-  mensajes?: Mensaje[]
+  @HasMany(() => Mensaje, { foreignKey: "numeroCliente", sourceKey: "numero", as: "mensajes" })
+mensajes?: Mensaje[];
 }

@@ -49,10 +49,10 @@ export class Mensaje extends Model<Mensaje, CreationAttribute> {
   fromMe!: boolean
 
   @BelongsTo(() => Cliente, {
-    foreignKey: "clientNumber",
+    foreignKey: "numeroCliente",
     targetKey: "numero",
   })
-  client?: Cliente
+  cliente?: Cliente
 
   @BelongsTo(() => Usuario)
   usuario?: Usuario
