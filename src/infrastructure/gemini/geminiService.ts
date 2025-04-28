@@ -7,6 +7,7 @@ import {
 import { getPrompData } from "../../application/actions/prompt/getPrompData"
 import axios from "axios"
 import { getAllFunctionCalls } from "./utils/getAllFunCalls"
+import qs from "qs"
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_KEY, vertexai: false })
 const nameModel = "gemini-2.0-flash"
@@ -34,7 +35,7 @@ export async function generate(message: string): Promise<string> {
         functionCallingConfig: {
           mode: FunctionCallingConfigMode.AUTO,
           // allowedFunctionNames: functionDeclarations
-          // ?.map((e) => e.name) 
+          // ?.map((e) => e.name)
           // .filter((name): name is string => !!name),
         },
       },
@@ -48,9 +49,10 @@ export async function generate(message: string): Promise<string> {
   if (functionCall) {
     try {
       // Obtenemos la configuración de la función
-      
-      const functionDeclaration = functionDeclarations.find(fn => fn.name === functionCall.name)
-      
+
+      const functionDeclaration = functionDeclarations.find(
+        (fn) => fn.name === functionCall.name
+      )
 
       // Extraemos el endpoint desde la base de datos
       // const functionCallDB = await import(
@@ -66,17 +68,54 @@ export async function generate(message: string): Promise<string> {
         return response?.text ?? "No se ha logrado responder con el AgenteIA"
       }
 
-      // Llamamos al endpoint con los args
-      const { data: endpointResponse } = await axios.post(
-        functionDeclaration.endpoint as string,
-        functionCall.args
-      )
+      // Verificar si functionCall.args está definido y es un objeto
+      let args: Record<string, string> = {}
+
+      if (functionCall.args && typeof functionCall.args === "object") {
+        try {
+          // Convertimos el objeto a Record<string, string> asegurándonos de que todos los valores sean cadenas
+          args = Object.fromEntries(
+            Object.entries(functionCall.args).map(([key, value]) => {
+              return [key, String(value)] // Convertimos cada valor a string de manera segura
+            })
+          )
+        } catch (error) {
+          console.error("Error al manejar los argumentos:", error)
+        }
+      }
+
+      // Usamos qs.stringify para convertir el objeto args en formato x-www-form-urlencoded
+      const data = qs.stringify(args)
+
+      let config = {
+        method: "post",
+        maxBodyLength: Infinity,
+        url: functionDeclaration.endpoint as string,
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        data: data,
+      }
+
+      // const responseAPI = await axios.post(
+      //   functionDeclaration.endpoint as string,
+      //   {
+      //     headers: {
+      //       "Content-Type": "application/x-www-form-urlencoded",
+      //     },
+      //     data,
+      //   }
+      // )
+
+      const responseAPI = await axios.request(config)
+
+      console.log(responseAPI.data)
 
       const functionResponse = {
         name: functionCall.name,
         response: {
           tool_call_id: functionCall.name,
-          output: JSON.stringify(endpointResponse),
+          output: JSON.stringify(responseAPI.data),
         },
       }
 

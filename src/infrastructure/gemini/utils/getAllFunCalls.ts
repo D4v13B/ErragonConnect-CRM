@@ -31,7 +31,8 @@ export async function getAllFunctionCalls(): Promise<FunctionDeclarationCustom[]
     if (functionCall.props) {
       for (const prop of functionCall.props) {
         (result.parameters?.properties as any)[prop.prop] = {
-          type: Type[prop.type.toUpperCase() as keyof typeof Type], // Mapeo dinámico al ENUM
+          // type: Type[prop.type.toUpperCase() as keyof typeof Type], // Mapeo dinámico al ENUM
+          type: Type.STRING,
           description: prop.descripcion,
         };
 
