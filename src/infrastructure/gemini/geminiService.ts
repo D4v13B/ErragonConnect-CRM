@@ -126,7 +126,7 @@ export async function generate(message: string): Promise<string> {
             { role: "user", parts: [{ text: promptData }] },
             { role: "user", parts: [{ text: message }] },
             {
-              role: "model",
+              role: "user",
               parts: [{ text: JSON.stringify(functionResponse) }],
             },
           ],
