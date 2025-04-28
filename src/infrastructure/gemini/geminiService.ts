@@ -32,10 +32,10 @@ export async function generate(message: string): Promise<string> {
       tools: [{ functionDeclarations }],
       toolConfig: {
         functionCallingConfig: {
-          mode: FunctionCallingConfigMode.ANY,
-          allowedFunctionNames: functionDeclarations
-          ?.map((e) => e.name) 
-          .filter((name): name is string => !!name),
+          mode: FunctionCallingConfigMode.AUTO,
+          // allowedFunctionNames: functionDeclarations
+          // ?.map((e) => e.name) 
+          // .filter((name): name is string => !!name),
         },
       },
     },
@@ -48,7 +48,9 @@ export async function generate(message: string): Promise<string> {
   if (functionCall) {
     try {
       // Obtenemos la configuración de la función
-      const functionDeclaration = functionDeclarations.find(fn => fn.name === functionCall)
+      
+      const functionDeclaration = functionDeclarations.find(fn => fn.name === functionCall.name)
+      
 
       // Extraemos el endpoint desde la base de datos
       // const functionCallDB = await import(

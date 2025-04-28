@@ -10,6 +10,16 @@ module.exports = {
         primaryKey: true,
         allowNull: false,
       },
+      functionCallId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "FunctionCalls",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+      },
       prop: {
         type: Sequelize.STRING(15),
         allowNull: false,
@@ -25,16 +35,6 @@ module.exports = {
       requerido: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
-      },
-      functionCallId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: "FunctionCalls",
-          key: "id",
-        },
-        onUpdate: "CASCADE",
-        onDelete: "CASCADE",
       },
       createdAt: {
         allowNull: false,
