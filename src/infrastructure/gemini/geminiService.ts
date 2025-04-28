@@ -132,7 +132,7 @@ export async function generate(message: string): Promise<string> {
           ],
         })
 
-        console.log(responseWithFunctionResult.text);
+        console.log(JSON.stringify(responseWithFunctionResult, null, 2));
         
 
       return (
