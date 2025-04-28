@@ -130,10 +130,26 @@ export async function generate(message: string): Promise<string> {
               parts: [{ text: JSON.stringify(functionResponse) }],
             },
           ],
+          config: {
+            tools: [{ functionDeclarations }], // <-- vuelve a mandar las tools
+            toolConfig: {
+              functionCallingConfig: {
+                mode: FunctionCallingConfigMode.AUTO,
+              },
+            },
+            
+            // generationConfig: {
+              // temperature: 0.7,
+              // topK: 1,
+              // topP: 0.95,
+              // maxOutputTokens: 1024,
+              // candidateCount: 1,
+              // stopSequences: [],
+            // },
+          },
         })
 
-        console.log(JSON.stringify(responseWithFunctionResult, null, 2));
-        
+      console.log(JSON.stringify(responseWithFunctionResult, null, 2))
 
       return (
         responseWithFunctionResult.text ??
