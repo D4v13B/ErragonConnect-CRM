@@ -53,7 +53,7 @@ io.on("connection", (socket) => {
 })
 
 server.listen(3000, async () => {
-  console.log(`🚀 Server corriendo en http://localhost:3000`)
+  console.log(`🚀 Server corriendo en el purto 3000`)
   conectarDB()
 
   startWhatsAppClient(bot, io)
