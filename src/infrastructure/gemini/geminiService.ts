@@ -135,10 +135,12 @@ export async function generate(message: string): Promise<string> {
 
       console.log(JSON.stringify(responseWithFunctionResult, null, 2))
 
-      return (
-        responseWithFunctionResult.text ??
-        "No se pudo generar la respuesta final."
-      )
+      const resultText = responseWithFunctionResult?.candidates?.[0]?.content
+        ?.parts?.length
+        ? responseWithFunctionResult.candidates[0].content.parts[0].text
+        : "No se pudo generar la respuesta final."
+
+      return resultText as string
     } catch (error) {
       console.error("Error procesando la functionCall:", error)
       return "Ocurrió un error al intentar ejecutar la función."
