@@ -3,25 +3,38 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("Clientes", {
+    await queryInterface.createTable("FunctionCallProps", {
       id: {
-        allowNull: false,
+        type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        allowNull: false,
       },
-      nombre: {
+      prop: {
+        type: Sequelize.STRING(15),
+        allowNull: false,
+      },
+      type: {
         type: Sequelize.STRING(30),
         allowNull: false,
       },
-      numero: {
-        type: Sequelize.STRING(30),
+      descripcion: {
+        type: Sequelize.TEXT,
         allowNull: false,
-        unique: true,
       },
-      botActivo: {
+      requerido: {
         type: Sequelize.BOOLEAN,
-        defaultValue: true
+        allowNull: false,
+      },
+      functionCallId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "FunctionCalls",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
       },
       createdAt: {
         allowNull: false,
@@ -37,6 +50,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("Clientes")
+    await queryInterface.dropTable("FunctionCallProps")
   },
 }
