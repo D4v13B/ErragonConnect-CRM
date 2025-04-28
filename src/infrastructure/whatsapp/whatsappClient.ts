@@ -10,6 +10,9 @@ import { getClientsAction } from "../../application/actions/cliente/getClients.a
 
 export let client: Client = new Client({
   authStrategy: new LocalAuth(),
+  puppeteer: {
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  },
 })
 
 /**
@@ -65,14 +68,18 @@ export const startWhatsAppClient = (bot: BotEngine, io?: any) => {
       }) //Guardamos el mensaje
       await client.sendSeen(msg.from) //Marcamos visto
       await bot.handle(msg.from, msg.body) //El Bot se encarga de responder
-    }else{
-      await logMessage({body: msg.body, fromMe: false, usuaId: 1, numeroCliente: numero})
+    } else {
+      await logMessage({
+        body: msg.body,
+        fromMe: false,
+        usuaId: 1,
+        numeroCliente: numero,
+      })
     }
 
     try {
       const clientes = await getClientsAction() // Obtener lista actualizada de clientes
       io.emit("get-clients", clientes) // Emitir la lista al cliente que hizo la solicitud
-
     } catch (error) {
       console.error("Error al obtener la lista de clientes:", error)
     }
