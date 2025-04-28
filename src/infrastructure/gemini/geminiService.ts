@@ -129,15 +129,20 @@ export async function generate(message: string): Promise<string> {
             parts: [{ text: JSON.stringify(functionResponse) }],
           },
         ],
+        config: {
+          temperature: 0,
+        }
       })
 
       console.log(responseWithFunctionResult)
 
       console.log(JSON.stringify(responseWithFunctionResult, null, 2))
 
-      const resultText = responseWithFunctionResult?.candidates?.[0]?.content
+      const resultText = 
+      responseWithFunctionResult?.candidates?.[0]?.content
         ?.parts?.length
-        ? responseWithFunctionResult.candidates[0].content.parts[0].text
+        ? responseWithFunctionResult.candidates[0].content.parts[0].text 
+        : responseWithFunctionResult.text ? responseWithFunctionResult.text
         : "No se pudo generar la respuesta final."
 
       return resultText as string
