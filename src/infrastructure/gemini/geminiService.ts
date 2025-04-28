@@ -132,6 +132,9 @@ export async function generate(message: string): Promise<string> {
           ],
         })
 
+        console.log(responseWithFunctionResult.text);
+        
+
       return (
         responseWithFunctionResult.text ??
         "No se pudo generar la respuesta final."
