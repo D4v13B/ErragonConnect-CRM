@@ -119,7 +119,7 @@ export async function generate(message: string): Promise<string> {
         },
       }
 
-      const responseWithFunctionResult: GenerateContentResponse =
+      const responseWithFunctionResult =
         await ai.models.generateContent({
           model: nameModel,
           contents: [
@@ -137,7 +137,6 @@ export async function generate(message: string): Promise<string> {
                 mode: FunctionCallingConfigMode.AUTO,
               },
             },
-            
             // generationConfig: {
               // temperature: 0.7,
               // topK: 1,
