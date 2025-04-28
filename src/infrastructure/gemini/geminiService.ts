@@ -119,28 +119,21 @@ export async function generate(message: string): Promise<string> {
         },
       }
 
-      const responseWithFunctionResult =
-        await ai.models.generateContent({
-          model: nameModel,
-          contents: [
-            { role: "user", parts: [{ text: promptData }] },
-            { role: "user", parts: [{ text: message }] },
-            {
-              role: "model",
-              parts: [{ text: JSON.stringify(functionResponse) }],
-            },
-          ],
-          config: {
-            tools: [{ functionDeclarations }],
-            toolConfig: {
-              functionCallingConfig: {
-                mode: FunctionCallingConfigMode.AUTO,
-              },
-            }
+      const responseWithFunctionResult = await ai.models.generateContent({
+        model: nameModel,
+        contents: [
+          { role: "user", parts: [{ text: promptData }] },
+          { role: "user", parts: [{ text: message }] },
+          {
+            role: "model",
+            parts: [{ text: JSON.stringify(functionResponse) }],
           },
-        })
+        ],
+      })
 
-      // console.log(JSON.stringify(responseWithFunctionResult, null, 2))
+      console.log(responseWithFunctionResult)
+
+      console.log(JSON.stringify(responseWithFunctionResult, null, 2))
 
       return (
         responseWithFunctionResult.text ??
