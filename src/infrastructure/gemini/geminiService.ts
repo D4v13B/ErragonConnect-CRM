@@ -8,6 +8,7 @@ import { getPrompData } from "../../application/actions/prompt/getPrompData"
 import axios from "axios"
 import { getAllFunctionCalls } from "./utils/getAllFunCalls"
 import qs from "qs"
+import { text } from "stream/consumers"
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_KEY, vertexai: false })
 const nameModel = "gemini-2.0-flash"
@@ -126,12 +127,17 @@ export async function generate(message: string): Promise<string> {
           { role: "user", parts: [{ text: message }] },
           {
             role: "model",
-            parts: [{ text: JSON.stringify(functionResponse) }],
+            parts: [{ text: JSON.stringify(responseAPI.data) }],
+            // parts: [
+            //   {
+            //     functionResponse: {
+            //       name: functionCall.name,
+            //       response:  JSON.stringify()
+            //     }
+            //   }
+            // ]
           },
-        ],
-        config: {
-          temperature: 0,
-        }
+        ]
       })
 
       console.log(responseWithFunctionResult)
