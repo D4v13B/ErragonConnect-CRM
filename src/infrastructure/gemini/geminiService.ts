@@ -76,9 +76,7 @@ export async function generate(message: string): Promise<string> {
         try {
           // Convertimos el objeto a Record<string, string> asegurándonos de que todos los valores sean cadenas
           args = Object.fromEntries(
-            Object.entries(functionCall.args).map(([key, value]) => {
-              return [key, String(value)] // Convertimos cada valor a string de manera segura
-            })
+            Object.entries(functionCall.args).map(([k, v]) => [k, String(v)])
           )
         } catch (error) {
           console.error("Error al manejar los argumentos:", error)
@@ -128,30 +126,13 @@ export async function generate(message: string): Promise<string> {
           {
             role: "model",
             parts: [{ text: JSON.stringify(responseAPI.data) }],
-            // parts: [
-            //   {
-            //     functionResponse: {
-            //       name: functionCall.name,
-            //       response:  JSON.stringify()
-            //     }
-            //   }
-            // ]
           },
         ]
       })
 
-      console.log(responseWithFunctionResult)
-
       console.log(JSON.stringify(responseWithFunctionResult, null, 2))
 
-      const resultText = 
-      responseWithFunctionResult?.candidates?.[0]?.content
-        ?.parts?.length
-        ? responseWithFunctionResult.candidates[0].content.parts[0].text 
-        : responseWithFunctionResult.text ? responseWithFunctionResult.text
-        : "No se pudo generar la respuesta final."
-
-      return resultText as string
+      return responseWithFunctionResult?.text ?? "No se pudo generar la respuesta final"
     } catch (error) {
       console.error("Error procesando la functionCall:", error)
       return "Ocurrió un error al intentar ejecutar la función."
