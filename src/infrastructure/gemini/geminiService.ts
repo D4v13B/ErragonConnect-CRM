@@ -70,31 +70,31 @@ export async function generate(message: string): Promise<string> {
       }
 
       // Verificar si functionCall.args está definido y es un objeto
-      let args: Record<string, string> = {}
+      // let args: Record<string, string> = {}
 
-      if (functionCall.args && typeof functionCall.args === "object") {
-        try {
-          // Convertimos el objeto a Record<string, string> asegurándonos de que todos los valores sean cadenas
-          args = Object.fromEntries(
-            Object.entries(functionCall.args).map(([k, v]) => [k, String(v)])
-          )
-        } catch (error) {
-          console.error("Error al manejar los argumentos:", error)
-        }
-      }
+      // if (functionCall.args && typeof functionCall.args === "object") {
+      //   try {
+      //     // Convertimos el objeto a Record<string, string> asegurándonos de que todos los valores sean cadenas
+      //     args = Object.fromEntries(
+      //       Object.entries(functionCall.args).map(([k, v]) => [k, String(v)])
+      //     )
+      //   } catch (error) {
+      //     console.error("Error al manejar los argumentos:", error)
+      //   }
+      // }
 
       // Usamos qs.stringify para convertir el objeto args en formato x-www-form-urlencoded
-      const data = qs.stringify(args)
+      // const data = qs.stringify(args)
 
-      let config = {
-        method: "post",
-        maxBodyLength: Infinity,
-        url: functionDeclaration.endpoint as string,
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        data: data,
-      }
+      // let config = {
+      //   method: "post",
+      //   maxBodyLength: Infinity,
+      //   url: functionDeclaration.endpoint as string,
+      //   headers: {
+      //     "Content-Type": "application/x-www-form-urlencoded",
+      //   },
+      //   data: data,
+      // }
 
       // const responseAPI = await axios.post(
       //   functionDeclaration.endpoint as string,
@@ -106,7 +106,14 @@ export async function generate(message: string): Promise<string> {
       //   }
       // )
 
-      const responseAPI = await axios.request(config)
+      // const responseAPI = await axios.request(config)
+      
+      // Llamamos al endpoint con los args
+      const responseAPI = await axios.get(
+        functionDeclaration.endpoint as string,{
+          params: functionCall.args
+        }
+      )
 
       // console.log(responseAPI.data)
 
@@ -130,7 +137,7 @@ export async function generate(message: string): Promise<string> {
         ]
       })
 
-      console.log(JSON.stringify(responseWithFunctionResult, null, 2))
+      // console.log(JSON.stringify(responseWithFunctionResult, null, 2))
 
       return responseWithFunctionResult?.text ?? "No se pudo generar la respuesta final"
     } catch (error) {
