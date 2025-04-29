@@ -12,8 +12,11 @@ import { flows } from "./flows"
 import { BotEngine } from "./core/BotEngine"
 import { startWhatsAppClient } from "./infrastructure/whatsapp/whatsappClient"
 import { startSocketClient } from "./infrastructure/socket/socketClient"
+import path from "path"
 
 export const STAGE = process.env.STAGE || "dev"
+export const PORT = process.env.PORT || 3000
+export const SERVER = `${process.env.HOST}:${PORT}` || `http://localhost:${PORT}`
 //Inicializar el bot
 const bot = new BotEngine(flows)
 //Habilitar cors
@@ -52,8 +55,8 @@ io.on("connection", (socket) => {
   })
 })
 
-server.listen(3000, async () => {
-  console.log(`🚀 Server corriendo en el purto 3000`)
+server.listen(PORT, async () => {
+  console.log(`🚀 Server corriendo en ${SERVER}`)
   conectarDB()
 
   startWhatsAppClient(bot, io)

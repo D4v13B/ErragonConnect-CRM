@@ -41,7 +41,7 @@
         border: 1px solid #e0e0e0;
       }
       h1 {
-        color: #478BCC;
+        color: #478bcc;
         margin-bottom: 10px;
       }
       p {
@@ -63,7 +63,11 @@
       <p>Para conectar WhatsApp, escanea este código con tu teléfono</p>
 
       <div class="qr-container">
-        <img src="" alt="QR para escanear" id="qr-image" />
+        <img
+          src="https://i.gifer.com/origin/34/34338d26023e5515f6cc8969aa027bca_w200.gif"
+          alt="QR para escanear"
+          id="qr-image"
+        />
       </div>
 
       <div class="status" id="status-message">Esperando el código QR...</div>
@@ -71,14 +75,18 @@
 
     <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
     <script>
-      const socket = io("http://204.48.30.100:3000", {
-        query: { company: "Moncho" },
-      })
+      // Usar el protocolo, hostname y puerto dinámicamente
+      const socketUrl = `${window.location.protocol}//${
+        window.location.hostname
+      }${window.location.port ? ":" + window.location.port : ":3000"}`
+
+      const qrImg = document.getElementById("qr-image")
+
+      const socket = io(socketUrl)
 
       socket.on("qr", (qrDataURL) => {
         console.log("QR recibido")
         console.log(qrDataURL)
-        const qrImg = document.getElementById("qr-image")
         qrImg.src = qrDataURL
         document.getElementById("status-message").textContent =
           "QR listo para escanear"
