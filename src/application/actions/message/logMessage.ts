@@ -1,3 +1,4 @@
+import { Cliente } from "../../../infrastructure/db/models/Cliente"
 import { Mensaje } from "../../../infrastructure/db/models/Mensaje"
 
 export interface ILogMessage {
@@ -29,6 +30,15 @@ export const logMessage = async ({
       fromMe,
       numeroCliente,
     })
+
+    //Actualizar el estado de conversacion del cliente
+    await Cliente.update(
+      {numero: numeroCliente},
+      {where: {
+        numero: numeroCliente
+      }}
+    )
+
     return res
   } catch (error) {
     console.error(error)

@@ -27,17 +27,19 @@ export async function generate(message: string): Promise<string> {
         parts: [{ text: message }],
       },
     ],
-    config: {
-      tools: [{ functionDeclarations }],
-      toolConfig: {
-        functionCallingConfig: {
-          mode: FunctionCallingConfigMode.AUTO,
-          // allowedFunctionNames: functionDeclarations
-          // ?.map((e) => e.name)
-          // .filter((name): name is string => !!name),
+    config: functionDeclarations
+    ? {
+        tools: [{ functionDeclarations }],
+        toolConfig: {
+          functionCallingConfig: {
+            mode: FunctionCallingConfigMode.AUTO,
+            // allowedFunctionNames: functionDeclarations
+            // ?.map((e) => e.name)
+            // .filter((name): name is string => !!name),
+          },
         },
-      },
-    },
+      }
+    : {},
   })
 
   const functionCall = response?.candidates?.[0]?.content?.parts?.find(
@@ -104,11 +106,12 @@ export async function generate(message: string): Promise<string> {
       // )
 
       // const responseAPI = await axios.request(config)
-      
+
       // Llamamos al endpoint con los args
       const responseAPI = await axios.get(
-        functionDeclaration.endpoint as string,{
-          params: functionCall.args
+        functionDeclaration.endpoint as string,
+        {
+          params: functionCall.args,
         }
       )
 
@@ -131,12 +134,15 @@ export async function generate(message: string): Promise<string> {
             role: "model",
             parts: [{ text: JSON.stringify(responseAPI.data) }],
           },
-        ]
+        ],
       })
 
       // console.log(JSON.stringify(responseWithFunctionResult, null, 2))
 
-      return responseWithFunctionResult?.text ?? "No se pudo generar la respuesta final"
+      return (
+        responseWithFunctionResult?.text ??
+        "No se pudo generar la respuesta final"
+      )
     } catch (error) {
       console.error("Error procesando la functionCall:", error)
       return "Ocurrió un error al intentar ejecutar la función."

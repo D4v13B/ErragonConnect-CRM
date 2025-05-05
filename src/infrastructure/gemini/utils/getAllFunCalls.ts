@@ -12,7 +12,8 @@ export async function getAllFunctionCalls(): Promise<FunctionDeclarationCustom[]
   });
 
   if (!functionCalls.length) {
-    throw new Error("No hay FunctionCalls registradas en la base de datos.");
+    return []
+    // throw new Error("No hay FunctionCalls registradas en la base de datos.");
   }
 
   const results: FunctionDeclarationCustom[] = functionCalls.map((functionCall) => {

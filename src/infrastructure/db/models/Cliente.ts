@@ -40,6 +40,11 @@ export class Cliente extends Model<Cliente, attrCreate> {
   @Column(DataType.BOOLEAN)
   botActivo!: boolean
 
+  // TODO Crear migracion y seeders
+  @Default(1)
+  @Column(DataType.INTEGER)
+  tag!: boolean
+
   @HasMany(() => Mensaje, { foreignKey: "numeroCliente", sourceKey: "numero", as: "mensajes" })
 mensajes?: Mensaje[];
 }

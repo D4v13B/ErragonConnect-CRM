@@ -1,7 +1,7 @@
-import https from "https"
-
 import express, { Request, Response } from "express"
-import { createServer } from "http"
+import http from "http"
+import https from "https"
+import fs from "fs"
 import { Server } from "socket.io"
 import { conectarDB } from "./infrastructure/db/db"
 import indexRoutes from "./presentation/routes/index.routes"
@@ -12,11 +12,13 @@ import { flows } from "./flows"
 import { BotEngine } from "./core/BotEngine"
 import { startWhatsAppClient } from "./infrastructure/whatsapp/whatsappClient"
 import { startSocketClient } from "./infrastructure/socket/socketClient"
-import path from "path"
+import { chechAuth } from "./presentation/middleware/checkAuth.middleware"
+import { socketAuthMiddleware } from "./presentation/middleware/socketAuth.middleware"
 
 export const STAGE = process.env.STAGE || "dev"
 export const PORT = process.env.PORT || 3000
-export const SERVER = `${process.env.HOST}:${PORT}` || `http://localhost:${PORT}`
+export const SERVER =
+  `${process.env.HOST}:${PORT}` || `http://localhost:${PORT}`
 //Inicializar el bot
 const bot = new BotEngine(flows)
 //Habilitar cors
@@ -28,8 +30,43 @@ app.use(express.json())
 
 app.use("/", indexRoutes)
 
+// Configurar SSL
+let credentials:
+  | {
+      key: string
+      certificate: string
+    }
+  | undefined
+
+if (process.env.SSL_KEY && process.env.SSL_CERT) {
+  credentials = {
+    key: fs.readFileSync(process.env.SSL_KEY, "utf8"),
+    certificate: fs.readFileSync(process.env.SSL_CERT, "utf8"),
+  }
+}
+
+// if(STAGE == "prod"){
+//   //TODO Vamos a buscar el certificado y la llave en la base de datos main para poder asignar el SSL
+//   credentials.key = ""
+//   credentials.certificate = ""
+// }
+
 // Sockeet server init
-const server = createServer(app)
+// const server = createServer(app)
+// let server : http.Server | https.Server
+
+let server: http.Server | https.Server
+
+if (STAGE === "dev") {
+  server = http.createServer(app)
+} else {
+  if (!credentials) {
+    throw new Error("❌ SSL credentials no definidas en modo producción")
+  }
+  server = https.createServer(credentials, app)
+}
+
+
 const io = new Server(server, {
   cors: { origin: "*" },
 })
@@ -40,6 +77,9 @@ app.use(express.static("public"))
 app.get("/", (_, res) => {
   res.sendFile(__dirname + "/public/index.html")
 })
+
+//Aplicar middleware de auth con JWT para proteger la ruta
+// io.use(socketAuthMiddleware)
 
 // Inicializar el cliente de whatsApp apenas nos conectamos al socket
 io.on("connection", (socket) => {
