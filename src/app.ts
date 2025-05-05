@@ -12,8 +12,6 @@ import { flows } from "./flows"
 import { BotEngine } from "./core/BotEngine"
 import { startWhatsAppClient } from "./infrastructure/whatsapp/whatsappClient"
 import { startSocketClient } from "./infrastructure/socket/socketClient"
-import { chechAuth } from "./presentation/middleware/checkAuth.middleware"
-import { socketAuthMiddleware } from "./presentation/middleware/socketAuth.middleware"
 
 export const STAGE = process.env.STAGE || "dev"
 export const PORT = process.env.PORT || 3000
@@ -35,6 +33,7 @@ let credentials:
   | {
       key: string
       certificate: string
+      passphrase: string
     }
   | undefined
 
@@ -42,6 +41,7 @@ if (process.env.SSL_KEY && process.env.SSL_CERT) {
   credentials = {
     key: fs.readFileSync(process.env.SSL_KEY, "utf8"),
     certificate: fs.readFileSync(process.env.SSL_CERT, "utf8"),
+    passphrase: process.env.PASSPHRASE as string
   }
 }
 
