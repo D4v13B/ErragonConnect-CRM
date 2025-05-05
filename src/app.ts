@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express"
 import http from "http"
-import https from "https"
+import https, { ServerOptions } from "https"
 import fs from "fs"
 import { Server } from "socket.io"
 import { conectarDB } from "./infrastructure/db/db"
@@ -29,18 +29,12 @@ app.use(express.json())
 app.use("/", indexRoutes)
 
 // Configurar SSL
-let credentials:
-  | {
-      key: string
-      certificate: string
-      passphrase: string
-    }
-  | undefined
+let credentials: https.ServerOptions | http.ServerOptions | null = null
 
 if (process.env.SSL_KEY && process.env.SSL_CERT) {
   credentials = {
-    key: fs.readFileSync(process.env.SSL_KEY, "utf8"),
-    certificate: fs.readFileSync(process.env.SSL_CERT, "utf8"),
+    key: fs.readFileSync(process.env.SSL_KEY),
+    cert: fs.readFileSync(process.env.SSL_CERT),
     passphrase: process.env.PASSPHRASE as string
   }
 }
@@ -60,7 +54,7 @@ let server: http.Server | https.Server
 if (STAGE === "dev") {
   server = http.createServer(app)
 } else {
-  if (!credentials) {
+  if (credentials === null) {
     throw new Error("❌ SSL credentials no definidas en modo producción")
   }
   server = https.createServer(credentials, app)
