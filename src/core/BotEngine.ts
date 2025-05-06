@@ -1,7 +1,6 @@
 // import { generate } from "../infrastructure/gemini/geminiService"
 import { sendFn } from "../infrastructure/whatsapp/whatsappClient"
 import { Flow } from "./Flow"
-
 export class BotEngine {
   constructor(
     private flows: Flow[],
@@ -20,7 +19,7 @@ export class BotEngine {
     }
 
     if (matchedFlow) {
-      await matchedFlow.handler({ message }, { send })
+      await matchedFlow.handler({ message,  clientNumber: from}, { send })
     }
 
   }

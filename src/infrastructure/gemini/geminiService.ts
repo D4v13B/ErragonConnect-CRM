@@ -1,23 +1,32 @@
 import "dotenv/config"
-import {
-  FunctionCallingConfigMode,
-  GoogleGenAI,
-} from "@google/genai"
+import { Content, FunctionCallingConfigMode, GoogleGenAI } from "@google/genai"
 import { getPrompData } from "../../application/actions/prompt/getPrompData"
 import axios from "axios"
 import { getAllFunctionCalls } from "./utils/getAllFunCalls"
+import { getMessaageClient } from "../../application/actions/message/getMessageClient"
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_KEY, vertexai: false })
 const nameModel = "gemini-2.0-flash"
 
-export async function generate(message: string): Promise<string> {
+export async function generate(message: string, clientNumber?:string): Promise<string> {
   const promptData = (await getPrompData()) ?? ""
+
+  let conversation: Content[] = []
+  
+  if(clientNumber){
+    const historialDB = await getMessaageClient(clientNumber)
+
+    conversation = historialDB?.map(msg => (
+      {role: msg.fromMe == true ? "model" : "user", parts:[{text: msg.body}]}
+    )) ?? []    
+  }
 
   const functionDeclarations = await getAllFunctionCalls()
 
   const response = await ai.models.generateContent({
     model: nameModel,
     contents: [
+      ...conversation,
       {
         role: "user",
         parts: [{ text: promptData }],
@@ -28,18 +37,18 @@ export async function generate(message: string): Promise<string> {
       },
     ],
     config: functionDeclarations
-    ? {
-        tools: [{ functionDeclarations }],
-        toolConfig: {
-          functionCallingConfig: {
-            mode: FunctionCallingConfigMode.AUTO,
-            // allowedFunctionNames: functionDeclarations
-            // ?.map((e) => e.name)
-            // .filter((name): name is string => !!name),
+      ? {
+          tools: [{ functionDeclarations }],
+          toolConfig: {
+            functionCallingConfig: {
+              mode: FunctionCallingConfigMode.AUTO,
+              // allowedFunctionNames: functionDeclarations
+              // ?.map((e) => e.name)
+              // .filter((name): name is string => !!name),
+            },
           },
-        },
-      }
-    : {},
+        }
+      : {},
   })
 
   const functionCall = response?.candidates?.[0]?.content?.parts?.find(

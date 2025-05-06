@@ -1,7 +1,7 @@
 export type Flow = {
   keywords: string[]
   handler: (
-    ctx: { message: string },
+    ctx: { message: string, clientNumber: string },
     tools: { send: (msg: string) => Promise<void> }
   ) => Promise<void>
 }
