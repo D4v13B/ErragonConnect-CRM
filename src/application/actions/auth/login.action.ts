@@ -1,3 +1,4 @@
+import { Op } from "sequelize"
 import { Rol } from "../../../infrastructure/db/models/Rol"
 import { Usuario } from "../../../infrastructure/db/models/Usuario"
 
@@ -9,8 +10,11 @@ export const login = async (
    try {
       const user = await Usuario.findOne({
          where: {
-            email,
-            password,
+            [Op.or]: [
+               {email},
+               {usuario: email}
+            ],
+            password
          },
          include: [Rol]
       })
