@@ -9,15 +9,10 @@ import { Usuario } from "../../../infrastructure/db/models/Usuario"
 export const getUsersAction = async (): Promise<Usuario[] | null> => {
   try {
     const data = await Usuario.findAll({
-      attributes: [
-        "id",
-        "nombre",
-        "email",
-        "isOnline",
-        "rolId",
-        "usuario",
-        [col("rol.nombre"), "role"],
-      ],
+      attributes: {
+        exclude: ["password", "token"],
+        include: [[col("rol.nombre"), "role"]]
+      },
       include: [
         {
           model: Rol,

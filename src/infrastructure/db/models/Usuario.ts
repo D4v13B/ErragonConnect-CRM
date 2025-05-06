@@ -61,6 +61,10 @@ export class Usuario extends Model {
   @Column(DataType.BOOLEAN)
   isOnline!: boolean
 
+  @Default(0)
+  @Column(DataType.INTEGER)
+  invisible!: number
+
   // @ForeignKey(() => Sucursal)
   // @Column(DataType.INTEGER)
   // sucuId!: number

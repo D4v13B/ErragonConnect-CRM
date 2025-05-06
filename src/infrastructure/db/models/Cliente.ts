@@ -41,7 +41,7 @@ export class Cliente extends Model<Cliente, attrCreate> {
   botActivo!: boolean
 
   // TODO Crear migracion y seeders
-  @Default(1)
+  @Default(0)
   @Column(DataType.INTEGER)
   tag!: number
 
