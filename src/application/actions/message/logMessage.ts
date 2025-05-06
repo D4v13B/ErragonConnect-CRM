@@ -33,7 +33,7 @@ export const logMessage = async ({
 
     //Actualizar el estado de conversacion del cliente
     await Cliente.update(
-      {numero: numeroCliente},
+      {tag: 0},
       {where: {
         numero: numeroCliente
       }}

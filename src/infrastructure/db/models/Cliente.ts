@@ -43,7 +43,7 @@ export class Cliente extends Model<Cliente, attrCreate> {
   // TODO Crear migracion y seeders
   @Default(1)
   @Column(DataType.INTEGER)
-  tag!: boolean
+  tag!: number
 
   @HasMany(() => Mensaje, { foreignKey: "numeroCliente", sourceKey: "numero", as: "mensajes" })
 mensajes?: Mensaje[];
