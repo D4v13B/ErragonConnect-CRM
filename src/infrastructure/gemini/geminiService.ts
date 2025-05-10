@@ -8,155 +8,116 @@ import { getMessaageClient } from "../../application/actions/message/getMessageC
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_KEY, vertexai: false })
 const nameModel = "gemini-2.0-flash"
 
-export async function generate(message: string, clientNumber?:string): Promise<string> {
+export async function generate(
+  message: string,
+  clientNumber?: string
+): Promise<string> {
   const promptData = (await getPrompData()) ?? ""
 
   let conversation: Content[] = []
-  
-  if(clientNumber){
+
+  if (clientNumber) {
     const historialDB = await getMessaageClient(clientNumber)
 
-    conversation = historialDB?.map(msg => (
-      {role: msg.fromMe == true ? "model" : "user", parts:[{text: msg.body}]}
-    )) ?? []    
+    conversation =
+      historialDB?.map((msg) => ({
+        role: msg.fromMe == true ? "model" : "user",
+        parts: [{ text: msg.body }],
+      })) ?? []
   }
 
   const functionDeclarations = await getAllFunctionCalls()
 
-  const response = await ai.models.generateContent({
-    model: nameModel,
-    contents: [
-      ...conversation,
-      {
-        role: "user",
-        parts: [{ text: promptData }],
-      },
-      {
-        role: "user",
-        parts: [{ text: message }],
-      },
-    ],
-    config: functionDeclarations
-      ? {
+  try {
+    const hasFunctions =
+      Array.isArray(functionDeclarations) && functionDeclarations.length > 0
+
+    const response = await ai.models.generateContent({
+      model: nameModel,
+      contents: [
+        ...conversation,
+        {
+          role: "user",
+          parts: [{ text: promptData }],
+        },
+        {
+          role: "user",
+          parts: [{ text: message }],
+        },
+      ],
+      ...(hasFunctions && {
+        config: {
           tools: [{ functionDeclarations }],
           toolConfig: {
             functionCallingConfig: {
               mode: FunctionCallingConfigMode.AUTO,
-              // allowedFunctionNames: functionDeclarations
-              // ?.map((e) => e.name)
-              // .filter((name): name is string => !!name),
             },
           },
-        }
-      : {},
-  })
-
-  const functionCall = response?.candidates?.[0]?.content?.parts?.find(
-    (part) => part.functionCall
-  )?.functionCall
-
-  if (functionCall) {
-    try {
-      // Obtenemos la configuración de la función
-
-      const functionDeclaration = functionDeclarations.find(
-        (fn) => fn.name === functionCall.name
-      )
-
-      // Extraemos el endpoint desde la base de datos
-      // const functionCallDB = await import(
-      //   "../../infrastructure/db/models/FunctionCall"
-      // ).then((m) =>
-      //   m.FunctionCall.findOne({ where: { nombre: functionCall.name } })
-      // )
-
-      if (!functionDeclaration) {
-        console.log(
-          `FunctionCall ${functionCall.name} no existe en la base de datos.`
-        )
-        return response?.text ?? "No se ha logrado responder con el AgenteIA"
-      }
-
-      // Verificar si functionCall.args está definido y es un objeto
-      // let args: Record<string, string> = {}
-
-      // if (functionCall.args && typeof functionCall.args === "object") {
-      //   try {
-      //     // Convertimos el objeto a Record<string, string> asegurándonos de que todos los valores sean cadenas
-      //     args = Object.fromEntries(
-      //       Object.entries(functionCall.args).map(([k, v]) => [k, String(v)])
-      //     )
-      //   } catch (error) {
-      //     console.error("Error al manejar los argumentos:", error)
-      //   }
-      // }
-
-      // Usamos qs.stringify para convertir el objeto args en formato x-www-form-urlencoded
-      // const data = qs.stringify(args)
-
-      // let config = {
-      //   method: "post",
-      //   maxBodyLength: Infinity,
-      //   url: functionDeclaration.endpoint as string,
-      //   headers: {
-      //     "Content-Type": "application/x-www-form-urlencoded",
-      //   },
-      //   data: data,
-      // }
-
-      // const responseAPI = await axios.post(
-      //   functionDeclaration.endpoint as string,
-      //   {
-      //     headers: {
-      //       "Content-Type": "application/x-www-form-urlencoded",
-      //     },
-      //     data,
-      //   }
-      // )
-
-      // const responseAPI = await axios.request(config)
-
-      // Llamamos al endpoint con los args
-      const responseAPI = await axios.get(
-        functionDeclaration.endpoint as string,
-        {
-          params: functionCall.args,
-        }
-      )
-
-      // console.log(responseAPI.data)
-
-      const functionResponse = {
-        name: functionCall.name,
-        response: {
-          tool_call_id: functionCall.name,
-          output: JSON.stringify(responseAPI.data),
         },
-      }
+      }),
+    })
 
-      const responseWithFunctionResult = await ai.models.generateContent({
-        model: nameModel,
-        contents: [
-          { role: "user", parts: [{ text: promptData }] },
-          { role: "user", parts: [{ text: message }] },
+    const functionCall = response?.candidates?.[0]?.content?.parts?.find(
+      (part) => part.functionCall
+    )?.functionCall
+
+    if (functionCall) {
+      try {
+        // Obtenemos la configuración de la función
+
+        const functionDeclaration = functionDeclarations.find(
+          (fn) => fn.name === functionCall.name
+        )
+
+        if (!functionDeclaration) {
+          console.log(
+            `FunctionCall ${functionCall.name} no existe en la base de datos.`
+          )
+          return response?.text ?? "No se ha logrado responder con el AgenteIA"
+        }
+
+        // Llamamos al endpoint con los args
+        const responseAPI = await axios.get(
+          functionDeclaration.endpoint as string,
           {
-            role: "model",
-            parts: [{ text: JSON.stringify(responseAPI.data) }],
+            params: functionCall.args,
+          }
+        )
+
+        // console.log(responseAPI.data)
+
+        const functionResponse = {
+          name: functionCall.name,
+          response: {
+            tool_call_id: functionCall.name,
+            output: JSON.stringify(responseAPI.data),
           },
-        ],
-      })
+        }
 
-      // console.log(JSON.stringify(responseWithFunctionResult, null, 2))
+        const responseWithFunctionResult = await ai.models.generateContent({
+          model: nameModel,
+          contents: [
+            { role: "user", parts: [{ text: promptData }] },
+            { role: "user", parts: [{ text: message }] },
+            {
+              role: "model",
+              parts: [{ text: JSON.stringify(responseAPI.data) }],
+            },
+          ],
+        })
 
-      return (
-        responseWithFunctionResult?.text ??
-        "No se pudo generar la respuesta final"
-      )
-    } catch (error) {
-      console.error("Error procesando la functionCall:", error)
-      return "Ocurrió un error al intentar ejecutar la función."
+        return (
+          responseWithFunctionResult?.text ??
+          "No se pudo generar la respuesta final"
+        )
+      } catch (error) {
+        console.error("Error procesando la functionCall:", error)
+        return "Ocurrió un error al intentar ejecutar la función."
+      }
     }
-  }
 
-  return response?.text ?? "No se ha logrado responder con el AgenteIA"
+    return response?.text ?? "No se ha logrado responder con el AgenteIA"
+  } catch (error) {
+    return "El agente no está bien configurado. Contactar al proveedor de este servicio"
+  }
 }
