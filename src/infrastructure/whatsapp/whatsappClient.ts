@@ -1,9 +1,11 @@
 import { Client, LocalAuth, Message } from "whatsapp-web.js"
 import "dotenv/config"
+import * as QrCode from "qrcode"
 import { BotEngine } from "../../core/BotEngine"
 import { clientNumberFilter } from "../../helpers/clientNumberFilter"
 import { logMessage } from "../../application/actions/message/logMessage"
 import { handleIncomingMessage } from "./handleIncomingMessages"
+import { connectedSockets } from "../socket/socketClient"
 
 let listenersInicializados = false
 
@@ -32,62 +34,26 @@ export const sendFn = async (to: string, message: string, usuaId?: number) => {
 
 export const startWhatsAppClient = (bot: BotEngine, io?: any) => {
   // const companyName = (socket.handshake.query.company as string) || socket.id
-  
-  if(listenersInicializados) return
+
+  if (listenersInicializados) return
   listenersInicializados = true
 
-  client.on("ready", () => {
+  client.once("ready", () => {
     console.log("✅ Cliente WhatsApp listo")
+    connectedSockets.forEach((socket) => {
+      socket.emit("ready", "WhatsApp listo")
+    })
   })
 
-  // client.on("message", async (msg: Message) => {
-  //   const clientNumber = msg.from
-  //   const chat: Chat = await msg.getChat()
+  client.once("qr", async (qr) => {
+    console.log("🟡 QR recibido")
+    const qrImage = await QrCode.toDataURL(qr)
+    connectedSockets.forEach((socket) => {
+      socket.emit("qr", qrImage)
+    })
+  })
 
-  //   const nombre = chat.name
-  //   const numero = clientNumberFilter(clientNumber)
-
-  //   if (!msg.from || !nombre) return // Si no hay ni mensajes ni nombre, vamos a omitirlo
-
-  //   /**
-  //    * Este es la entrada donde va a actuar el bot
-  //    * 1.Buscamos en base de datos si el numero de celular no esta en lista negra para el bot
-  //    * 2. Si esta activo, entramos al botEngine y respondemos
-  //    * 3. Sino, no hacemos nada, solo recibimos y guardamos en DB
-  //    */
-
-  //   if (!(await isBlackList(clientNumberFilter(numero)))) {
-  //     await chat.sendStateTyping() // Solo se activa el typing, si no está en lista negra
-  //     /**
-  //      * Aqui vamos a encontrar o crear "Cliente", luego insertamos el mensaje
-  //      */
-
-  //     await clientFindOrCreate({ nombre, numero }) //Creamos
-  //     await logMessage({
-  //       numeroCliente: numero,
-  //       body: msg.body,
-  //       fromMe: msg.fromMe,
-  //     }) //Guardamos el mensaje
-  //     await client.sendSeen(msg.from) //Marcamos visto
-  //     await bot.handle(msg.from, msg.body) //El Bot se encarga de responder
-  //   } else {
-  //     await logMessage({
-  //       body: msg.body,
-  //       fromMe: false,
-  //       usuaId: 1,
-  //       numeroCliente: numero,
-  //     })
-  //   }
-
-  //   try {
-  //     const clientes = await getClientsAction() // Obtener lista actualizada de clientes
-  //     io.emit("get-clients", clientes) // Emitir la lista al cliente que hizo la solicitud
-  //   } catch (error) {
-  //     console.error("Error al obtener la lista de clientes:", error)
-  //   }
-  // })
-
-  client.on("message", async (msg: Message) => {
+  client.once("message", async (msg: Message) => {
     await handleIncomingMessage(msg, bot, io)
   })
 

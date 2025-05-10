@@ -11,7 +11,7 @@ import cors from "cors"
 import { flows } from "./flows"
 import { BotEngine } from "./core/BotEngine"
 import { startWhatsAppClient } from "./infrastructure/whatsapp/whatsappClient"
-import { startSocketClient } from "./infrastructure/socket/socketClient"
+import { connectedSockets, startSocketClient } from "./infrastructure/socket/socketClient"
 
 export const STAGE = process.env.STAGE || "dev"
 export const PORT = process.env.PORT || 3000
@@ -86,6 +86,8 @@ io.on("connection", (socket) => {
     if (STAGE == "dev") {
       console.log("🔴 Cliente desconectado:", socket.id)
     }
+    const index = connectedSockets.indexOf(socket)
+    if(index !== -1) connectedSockets.splice(index, 1)
   })
 })
 

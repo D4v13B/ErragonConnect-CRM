@@ -4,8 +4,13 @@ import "dotenv/config"
 import { STAGE } from "../../app"
 import { getClientsAction } from "../../application/actions/cliente/getClients.action"
 
+export const connectedSockets: any[] = []
+
 export const startSocketClient = (socket: any) => {
-  socket?.on(
+
+  connectedSockets.push(socket)
+
+  socket?.once(
     //Entra al scoket, emit, es que emite a los sockets conectados
     "send-message",
     ({
@@ -30,16 +35,16 @@ export const startSocketClient = (socket: any) => {
     await updateClientsList(socket);  // Obtener lista de clientes
   });
 
-  client.on("qr", async (qr) => {
-    STAGE == "dev" ? console.log("🟡 QR recibido") : ""
-    const qrImage = await QrCode.toDataURL(qr)
-    socket?.emit("qr", qrImage)
-  })
+  // client.once("qr", async (qr) => {
+  //   STAGE == "dev" ? console.log("🟡 QR recibido") : ""
+  //   const qrImage = await QrCode.toDataURL(qr)
+  //   socket?.emit("qr", qrImage)
+  // })
 
-  client.on("ready", () => {
-    // console.log("✅ Cliente WhatsApp listo")
-    socket?.emit("ready", "WhatsApp listo")
-  })
+  // client.once("ready", () => {
+  //   // console.log("✅ Cliente WhatsApp listo")
+  //   socket?.emit("ready", "WhatsApp listo")
+  // })
 }
 
 const updateClientsList = async (socket: any) => {
