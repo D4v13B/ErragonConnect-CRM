@@ -7,10 +7,9 @@ import { getClientsAction } from "../../application/actions/cliente/getClients.a
 export const connectedSockets: any[] = []
 
 export const startSocketClient = (socket: any) => {
-
   connectedSockets.push(socket)
 
-  socket?.once(
+  socket?.on(
     //Entra al scoket, emit, es que emite a los sockets conectados
     "send-message",
     ({
@@ -26,14 +25,13 @@ export const startSocketClient = (socket: any) => {
       // client.sendMessage(chatId, message)
       sendFn(chatId, message, usuaId)
       socket.broadcast.emit("get-clientes")
-
     }
   )
 
-   // Evento para obtener la lista de clientes
-   socket?.on("get-clients", async () => {
-    await updateClientsList(socket);  // Obtener lista de clientes
-  });
+  // Evento para obtener la lista de clientes
+  socket?.on("get-clients", async () => {
+    await updateClientsList(socket) // Obtener lista de clientes
+  })
 
   // client.once("qr", async (qr) => {
   //   STAGE == "dev" ? console.log("🟡 QR recibido") : ""

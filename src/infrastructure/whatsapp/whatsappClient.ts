@@ -45,7 +45,7 @@ export const startWhatsAppClient = (bot: BotEngine, io?: any) => {
     })
   })
 
-  client.once("qr", async (qr) => {
+  client.on("qr", async (qr) => {
     console.log("🟡 QR recibido")
     const qrImage = await QrCode.toDataURL(qr)
     connectedSockets.forEach((socket) => {
@@ -53,8 +53,14 @@ export const startWhatsAppClient = (bot: BotEngine, io?: any) => {
     })
   })
 
-  client.once("message", async (msg: Message) => {
+  client.on("message", async (msg: Message) => {
     await handleIncomingMessage(msg, bot, io)
+  })
+
+  client.on("disconnected", (reason) => {
+    console.log("❌Cliente de WhatsApp desconectado");
+    client.destroy()
+    client.initialize()
   })
 
   client.initialize()
